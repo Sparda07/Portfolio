@@ -1,7 +1,8 @@
 "use client";
 
 import React from "react";
-import { motion } from "motion/react";
+import { AnimatePresence, motion } from "motion/react";
+import { useState } from "react";
 import Link from "next/link";
 import { cn } from "../lib/utils";
 import { Spotlight } from "./ui/spotlight-new";
@@ -124,6 +125,7 @@ const Hero = () => {
 /* -------------------------------------------------------------------------- */
 
 function Navbar() {
+  const [menuOpen, setMenuOpen] = useState(false);
   const links = [
     {
       name: "About",
@@ -185,26 +187,69 @@ function Navbar() {
         </a>
 
         {/* Mobile Button */}
-        <button
+        <motion.button
           type="button"
-          aria-label="Open navigation menu"
-          className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-neutral-300 transition-all duration-300 hover:bg-white/[0.08] md:hidden"
+          aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((open) => !open)}
+          whileTap={{ scale: 0.9 }}
+          className="relative z-[110] flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-neutral-300 transition-all duration-300 hover:bg-white/[0.08] md:hidden"
         >
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.7"
-            strokeLinecap="round"
-          >
-            <path d="M4 7h16" />
-            <path d="M4 12h16" />
-            <path d="M4 17h16" />
-          </svg>
-        </button>
+          <motion.span
+            animate={menuOpen ? { rotate: 45, y: 0 } : { rotate: 0, y: -4 }}
+            className="absolute h-px w-4 bg-current"
+          />
+          <motion.span
+            animate={menuOpen ? { opacity: 0, x: 8 } : { opacity: 1, x: 0 }}
+            className="absolute h-px w-4 bg-current"
+          />
+          <motion.span
+            animate={menuOpen ? { rotate: -45, y: 0 } : { rotate: 0, y: 4 }}
+            className="absolute h-px w-4 bg-current"
+          />
+        </motion.button>
       </nav>
+
+      <AnimatePresence>
+        {menuOpen && (
+          <>
+            <motion.button
+              type="button"
+              aria-label="Close navigation menu"
+              className="fixed inset-0 z-[90] bg-black/70 backdrop-blur-sm md:hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMenuOpen(false)}
+            />
+            <motion.div
+              className="fixed inset-x-4 top-24 z-[100] overflow-hidden rounded-3xl border border-white/10 bg-[#0a0b0f]/95 p-4 shadow-2xl shadow-black/50 backdrop-blur-2xl md:hidden"
+              initial={{ opacity: 0, y: -18, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -18, scale: 0.96 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+            >
+              <div className="pointer-events-none absolute -right-20 -top-20 h-48 w-48 rounded-full bg-cyan-300/10 blur-3xl" />
+              <div className="relative space-y-2">
+                {links.map((link, index) => (
+                  <motion.a
+                    key={link.name}
+                    href={link.href}
+                    onClick={() => setMenuOpen(false)}
+                    initial={{ opacity: 0, x: -18 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.06, duration: 0.3 }}
+                    className="flex items-center justify-between rounded-2xl border border-transparent px-4 py-4 text-base text-neutral-300 transition-colors hover:border-white/10 hover:bg-white/[0.06] hover:text-white"
+                  >
+                    <span>{link.name}</span>
+                    <span className="text-cyan-200/70">↗</span>
+                  </motion.a>
+                ))}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
 }
