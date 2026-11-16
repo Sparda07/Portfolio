@@ -72,7 +72,7 @@ const projects: Project[] = [
     description:
       "A modern Next.js project focused on creating a polished foundation for an engaging web experience.",
     technologies: ["Next.js", "React", "TypeScript"],
-    href: "https://github.com/Sparda07/GIfly",
+    href: "https://g-ifly.vercel.app/",
     visual: "gifly",
     accent: "pink",
   },
